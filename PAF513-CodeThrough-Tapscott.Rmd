@@ -1,0 +1,274 @@
+---
+title: "Understanding and Exploring ggplot2"
+author: "Corina Tapscott"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    theme: readable
+    df_print: paged
+    highlight: tango
+    toc: yes
+    toc_float: yes
+---
+
+```{r include = FALSE}
+
+# SET GLOBAL KNITR OPTIONS
+
+knitr::opts_chunk$set(echo = TRUE, 
+                      message = FALSE, 
+                      warning = FALSE, 
+                      fig.width = 10, 
+                      fig.height = 8)
+
+
+
+# LOAD PACKAGES
+
+library(pander)
+library(kableExtra)
+library(ggplot2)
+
+
+```
+
+<br>
+<br>
+
+# Introduction
+
+This code through explores ggplot2. This R package is a powerful data visualization tool and is one that even the most novice of R users can quickly begin to understand so that they too, can begin to visualize their data. As described by "R for Ecology" (2021; Source I), the "gg" in "ggplot2" stands for "grammar of graphics." Just as one has to work to learn the language of R, so too does one have to learn the "grammar of graphics." This code through will illustrate some of the basic features associated with this "grammar of graphics" and review three examples of how this package can be utilized to effectively, and quickly, visualize data.
+
+<br>
+
+## Content Overview
+
+Specifically, we'll explain and demonstrate how to visualize data via bar graphs, scatter plots, and line graphs.Though don't be fooled, ggplot2 can graph much more than the three aforementioned graphs. For example, ggplot2 is capable of plotting the following graphs [Source V]:
+
+* Scatter Plot (geom_point)
+* Bar Charts (geom_bar)
+* Histograms (geom_histogram)
+* Line Charts (geom_line)
+* Polygons (geom_polygon)
+* Creating Maps (geom_map)
+* Creating Patterns (geom_smooth)
+
+You can view a list of the top 50 ggplot2 visualizations here: https://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html
+
+The present code through will be utilizing the data set, "ChickWeight." This data frame contains 578 rows and 4 variables; the data were pulled from an experiment which explored the effect of diet on the early physical growth (i.e., weight) of chicks. More specifically, this data frame contains the following four variables: the chick's  weight (gm); the number of days since the birth of the chick; a unique identifier for each chick; and a number depicting which diet the chick was on (four total diet options: one through four). View https://www.rdocumentation.org/packages/datasets/versions/3.6.2/topics/ChickWeight for more information. [Source II]
+
+<br>
+
+## Why You Should Care
+
+This topic is valuable because there is always a need to visualize data. Whether to aid you in your own analysis and understanding of the data collected or to effectively communicate these findings to a client, funder, etc. Thus, it is important that one begin to grasp the data visualization tools that are available to you within R and ggplot2 is a great place to start as it is a very commonly used package. In fact, ggplot2 has been described as one of the most popular R packages for the visualization of data and "is used by hundreds of thousands of people to make millions of plots" [SOURCE VII].Even better, it can be relatively simple to begin to utilize the package and explore at least some of its benefits. While the package is powerful and can create a lot of visualizations, one can quickly begin graphing usually in a matter of minutes.
+
+<br>
+
+## Further Exposition
+
+Ggplot2 was developed by Hadley Wickham and was first released in 2005. Since its initial release ggplot2 has gone through several major updates.[SOURCE VI]
+
+<br>
+
+## Learning Objectives
+
+Specifically, you'll learn how to...
+
+(1)	Graph a simple bar graph
+(2)	Change the orientation of the bar graph
+(3)	Enhance the colors utilized within the bar graph
+(4)	Update the title and axes labels as well as their orientation
+(5)	Graph a scatter plot
+(6)	Color-code the scatter plot based on certain groupings of the data
+(7)	Add shapes to the scatter plot based on certain groupings of the data
+(8)	Graph a line graph
+(9)	*Sneak Peak* Mutate a variable using the dplyr package to improve the aforementioned line graph
+
+
+<br>
+<br>
+
+# Using ggplot2 to create data visualizations
+
+Here, we'll begin by showing you how to graph a simple bar graph within R using the ggplot2 package. We will also explore how to enhance the aesthetics of this bar graph such as the title and axes labels, their alignment, the colors used to reflect the groupings of data, and more.
+
+<br>
+
+## Basic Example 
+
+This basic example shows how one begins to visualize data with ggplot2. The basic structure of ggplot 2 is as follows [Source I]:
+
+data + aesthetics (aes) + geometry (geom_)
+
+More specifically, the data set you are using + what aspects of the data map to the x- and y-coordinates of this plot + the preferred geometric presentation (e.g., scatter plot, histogram, box plot, line graph, etc.)
+
+Another way to represent this would be as follows:
+
+ggplot(data, aes(x,y))+ geom_(aes(color,fill))
+
+View an example of this basic code, with the ChickWeight data below. 
+
+Say you are wanting to quickly examine, and visualize, the number of chicks in each diet...
+
+```{r}
+
+ggplot(ChickWeight, aes(x=Diet)) + geom_bar()
+
+```
+Note: technically you do not need to write "x=" here (above), the system will default to this being the data mapped to the x-axis, but for illustration purposes the "x=" as been maintained in this example.
+
+<br>
+
+## Advanced Examples
+
+However, the previous example is pretty drab and not that visually appealing. Thus, it is worthwhile to explore some of the other features that ggplot2 has to offer.
+
+Perhaps you want to flip the orientation of your bar graph as well as add some color to make it more visually appealing. This may also be a good opportunity to incorporate the colors associated with your client's company, if applicable.
+
+
+Mapping the diet to the y-axis
+
+```{r}
+ggplot(ChickWeight, aes(y=Diet)) + geom_bar()
+```
+<br>
+
+Adding both a color to the bars themselves (via "fill") and a color border around the bars themselves (via "color")
+
+```{r}
+ggplot(ChickWeight, aes(y=Diet)) + geom_bar(fill="maroon",color="gold")
+```
+<br>
+
+However, you probably don't want your bar graph to have all the bars be one color, that way it can be easier for a future reader to distinguish between bars. In order to do this you are going to add "fill =" after you designated the variable associated with your axes and select a variable that should correspond with this color-coding (i.e., fill=variable).
+
+```{r}
+ggplot(ChickWeight, aes(y=Diet,fill=Diet)) + geom_bar()
+
+```
+
+<br>
+
+Perhaps you want to enhance the title and axes labels of this bar graph.You can do this by adding this to your growing string of functions with "+ ggtitle()" and "+labs()". See the example below:
+
+```{r}
+ggplot(ChickWeight, aes(y=Diet,fill=Diet)) + geom_bar() + ggtitle("Chicken Treatment Groups (Diet Experiment)") + labs(x="Number of Chickens")
+
+```
+<br>
+
+To change the alignment of this title, you can utilize "hjust" for horizontal alignment (0 for left, 0.5 for center, and 1 for right) or "vjust" for vertical alignment (0 for bottom, 0.5 for center, 1 for top). I don't love this title being off to the left, so let's work to align it more in the center.
+
+You will do this by adding another piece to your string of code: "+ theme()" This controls the non-data elements of the plot and allows the user to customize various visual aspects of the plot such as, fonts, text, labels, legends, text alignment, and more. Learn more about all that "theme()" can do here: https://ggplot2.tidyverse.org/reference/theme.html [Source IV]
+
+```{r}
+ggplot(ChickWeight, aes(y=Diet,fill=Diet)) + geom_bar() + ggtitle("Chicken Treatment Groups (Diet Experiment)") + theme(plot.title = element_text(hjust=0.5))
+
+```
+
+<br>
+
+While we thus far have explore some of the ways that ggplot2 can create a bar graph, and some of the ways in which that bar graph can be finessed, ggplot2 can create many more visualizations beyond a bar graph. For example, let's make a scatter plot of our ChickenWeight data that explores the chicken's weight (i.e., the "weight" variable) based on the number of days since the birth of the chick (i.e., the "Time" variable).
+
+```{r}
+
+ggplot(ChickWeight, aes(x=Time,y=weight)) + geom_point() + ggtitle("Chicken Treatment Groups (Diet Experiment)") + theme(plot.title = element_text(hjust=0.5)) + labs(x = "Number of Days Since Birth", y = "Weight (gm)")
+
+
+```
+<br>
+
+Now, this scatterplot isn't the most helpful because it just shows weight increasing as the number of days since birth of the chick increases, which isn't surprising. Thus, it would be most helpful to  have the scatterplot color-code the dots based on the diet that each chick was assigned to be on. You can accomplish this by adding a "col=variable that determines color-coding," in this case, it will be determined by the variable, "Diet"; see the example below. 
+
+```{r}
+
+
+ggplot(ChickWeight, aes(x=Time,y=weight,col=Diet)) + geom_point() + ggtitle("Chicken Treatment Groups (Diet Experiment)") + theme(plot.title = element_text(hjust=0.5)) + labs(x = "Number of Days Since Birth", y = "Weight (gm)")
+
+```
+<br>
+
+This can even be taken a step further and each diet could be represented by a different shape or symbol. This can be done by adding a "shape=" code after the previous "col=" code that we just added. See the example below:
+
+```{r}
+
+ggplot(ChickWeight, aes(x=Time,y=weight,col=Diet,shape=Diet)) + geom_point() + ggtitle("Chicken Treatment Groups (Diet Experiment)") + theme(plot.title = element_text(hjust=0.5)) + labs(x = "Number of Days Since Birth", y = "Weight (gm)")
+
+```
+<br>
+
+This information may look better when presented as a line graph. Let's try that using the geom_line() and geom_point() functions.
+
+```{r}
+
+ggplot(ChickWeight, aes(x=Time,y=weight,col=Diet)) + geom_line() + geom_point() + ggtitle("Chicken Treatment Groups (Diet Experiment)") + theme(plot.title = element_text(hjust=0.5)) + labs(x = "Number of Days Since Birth", y = "Weight (gm)")
+
+
+```
+<br>
+
+This information isn't very clear. Let's try adding in a new variable that looks at average weight using the mutate() function and group_by() functions in the dplyr package. That package is beyond the scope of this code through, but may inspire you to look more into the benefits of the dplyr package.This creates a much clearer picture that, on average, Diet 3 seems to be the most effective in creating larger chickens over time, particularly 12-13 days after birth.
+
+```{r}
+
+library(dplyr)
+ChickWeight2 <- ChickWeight %>% 
+  group_by(Diet,Time) %>% 
+  mutate(avgweight = mean(weight))
+
+ggplot(ChickWeight2, aes(x=Time,y=avgweight,col=Diet)) + geom_line() + geom_point() + ggtitle("Chicken Treatment Groups (Diet Experiment)") + theme(plot.title = element_text(hjust=0.5)) + labs(x = "Number of Days Since Birth", y = "Weight (gm)")
+```
+
+<br> 
+<br>
+
+# Further Resources
+
+Learn more about [package, technique, dataset] with the following:
+
+<br>
+
+* The following cheat sheet can be helpful to keep on hand when utilizing ggplot2, really no matter your level of expertise. Consider printing this out and keeping a copy at your desk:
+    - Resource I [ggplot2 cheat sheet](https://www.maths.usyd.edu.au/u/UG/SM/STAT3022/r/current/Misc/data-visualization-2.1.pdf ) 
+<br>
+<br>
+* The following gallery explores extensions that are available for ggplot2:
+    - Resource II [Gallery of ggplot2 Extensions](•	https://exts.ggplot2.tidyverse.org/gallery/ )
+<br>
+<br>
+* Consider reading the "Data Visualization" chapter within "R for Data Science (2e)" to learn more about ggplot2:
+    - Resource III [R for Data Science (2e)](https://r4ds.hadley.nz/data-visualize)
+<br>
+<br>
+* The following YouTube workshop can be a helpful place to start to learn more about ggplot2 and all it has to offer:
+    - Resource IV [YouTube Workshop: ggplot2 workshop part 1](https://www.youtube.com/watch?v=h29g21z0a68 )
+<br>
+<br>
+* Short on time? I enjoyed the following 5-minute introductory video to ggplot2:
+    - Resource V [YouTube: ggplot explained in 5 minutes!](https://www.youtube.com/watch?v=FdVy57oGJuc)
+
+<br>
+
+# Works Cited
+
+This code through references and cites the following sources:
+
+<br>
+
+* R for Ecology (2021). Source I. [ggplot2 explained in 5 minutes!](https://www.youtube.com/watch?v=FdVy57oGJuc)
+
+* RDocumentation (n.d.). Source II. [ChickWeigjt: Weight versus age of chicks on different diets](https://www.rdocumentation.org/packages/datasets/versions/3.6.2/topics/ChickWeight)
+
+* Deanna Li (2020). Source III. [Basic R Guide for NSC Statistics](https://bookdown.org/dli/rguide/)
+
+* ggplot2 (n.d.). Source IV. [Modify components of a theme](https://ggplot2.tidyverse.org/reference/theme.html)
+
+* Selva Prabhakaran (n.d.). Source V. [Top 50 ggplot2 Visualizations - The Master List (With Full R Code)](https://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html)
+
+* Devashree Madhugiri (2024). Source VI. [A Comprehensive Guide on ggplot2 in R](https://www.analyticsvidhya.com/blog/2022/03/a-comprehensive-guide-on-ggplot2-in-r/)
+
+* ggplot2 (n.d.). Source VII. [ggplot2](https://ggplot2.tidyverse.org/#:~:text=ggplot2%20is%20now%20over%2010,ggplot2%20itself%20changes%20relatively%20little)
+
+<br>
+<br>
